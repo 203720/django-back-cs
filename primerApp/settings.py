@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Componentes agregadas
     'primerComponente',
     'login',
+    'register',
 
     # Librerias agregadas al proyecto
     'rest_framework',
