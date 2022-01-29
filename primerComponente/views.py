@@ -47,3 +47,11 @@ class PrimerTablaDetail(APIView):
             datas = serializer.data
             return Response(datas,status =status.HTTP_201_CREATED)
         return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        objetive = self.get_object(pk)
+        if objetive!="No existe":
+            objetive.delete()
+            return Response("Dato eliminado",  status = status.HTTP_200_OK)
+        else:
+            return Response("Dato no econtrado", status = status.HTTP_400_BAD_REQUEST)
