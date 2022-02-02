@@ -6,4 +6,4 @@ class PrimerTabla(models.Model):
     nombre = models.CharField(max_length=50, null = False)
     edad = models.IntegerField(null = False)
     created = models.DateTimeField(default=timezone.now)
-    edit = models.DateTimeField(blank=True, null=True, default=None)
+    edited = models.DateTimeField(blank=True, null=True, default=None)
