@@ -1,4 +1,5 @@
 from multiprocessing import context
+from urllib import response
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,16 +16,16 @@ from primerComponente.serializers import PrimerTablaSerializer
 
 # Create your views here.
 class PrimerTablaList(APIView):
-    def jsonMaker(self,message, data, status):
-        json1={"messages":message, "pay_load":data, "status": status }
-        x=json.dumps(json1)
-        responseOk = json.loads(x)
+    def response_custom(self,message, pay_load, status):
+        responseX = {"messages":message, "pay_load":pay_load, "status":status}
+        responseY = json.dumps(responseX)
+        responseOk = json.loads(responseY)
         return responseOk
 
     def get(self, request, format=None):
         queryset=PrimerTabla.objects.all()
         serializer=PrimerTablaSerializer(queryset,many=True ,context={'request':request})
-        responseOk=self.jsonMaker("success",serializer.data , status.HTTP_200_OK)
+        responseOk = self.response_custom("Success", serializer.data, status.HTTP_200_OK)
         return Response(responseOk)
 
     def post(self, request, format=None):
@@ -32,8 +33,8 @@ class PrimerTablaList(APIView):
         if serializer.is_valid():
             serializer.save()
             datas = serializer.data
-            return Response(datas,status =status.HTTP_201_CREATED)
-        return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+            return Response(datas,  status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
 
 class PrimerTablaDetail(APIView):
     def get_object(self, pk):
@@ -47,7 +48,7 @@ class PrimerTablaDetail(APIView):
         if idResponse != 0:
             idResponse = PrimerTablaSerializer(idResponse)
             return Response(idResponse.data, status = status.HTTP_200_OK)
-        return Response("No hay datos deja checo como te arreglo mi pana",status = status.HTTP_400_BAD_REQUEST)
+        return Response("No hay datos",status = status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
         idResponse = self.get_object(pk)
@@ -64,4 +65,4 @@ class PrimerTablaDetail(APIView):
             objetive.delete()
             return Response("Dato eliminado",  status = status.HTTP_200_OK)
         else:
-            return Response("Dato no econtrado", status = status.HTTP_400_BAD_REQUEST)
+            return Response("Dato no encontrado", status = status.HTTP_400_BAD_REQUEST)
