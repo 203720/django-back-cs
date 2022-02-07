@@ -1,9 +1,11 @@
 # Create your views here.
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import exceptions
 import os.path
+import json
 
 #Importación de modelos
 from loadImage.models import PrimerTabla
@@ -11,10 +13,17 @@ from loadImage.models import PrimerTabla
 from loadImage.serializers import PrimerTablaSerializer
 
 class LoadImageTableList(APIView):
+    def response_custom(self,message, pay_load, status):
+        responseX = {"messages":message, "pay_load":pay_load, "status":status}
+        responseY = json.dumps(responseX)
+        responseOk = json.loads(responseY)
+        return responseOk
+        
     def get(self, request, format=None):
         queryset = PrimerTabla.objects.all()
         serializer = PrimerTablaSerializer(queryset, many = True, context = {'request':request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        responseOk = self.response_custom("Success", serializer.data, status.HTTP_200_OK)
+        return Response(responseOk)
 
     def post(self, request):
         if 'url_img' not in request.data:
@@ -27,8 +36,8 @@ class LoadImageTableList(APIView):
             img = PrimerTabla(**validated_data)
             img.save()
             serializer_response = PrimerTablaSerializer(img)
-            return Response(serializer_response.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer_response.data,  status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
 
 
 class LoadImageTableDetail(APIView):
