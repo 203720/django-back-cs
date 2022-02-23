@@ -53,3 +53,22 @@ pip install Pillow
 ```bash
 'loadImage',
 ```
+
+## Instalación CORS para permitir carga de datos
+```bash
+pip install django-cors-headers
+```
+## Agrega el componente a INSTALLED_APPS en settings
+```bash
+'corsheaders',
+```
+## Agrega el  CORS en MIDDLEWARE
+```bash
+ 'corsheaders.middleware.CorsMiddleware',
+```
+## Agrega el  CORS en Settings
+```bash
+ CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+```
