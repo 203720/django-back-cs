@@ -52,6 +52,9 @@ INSTALLED_APPS = [
     # Librerias agregadas al proyecto
     'rest_framework',
     'rest_framework.authtoken',
+
+    #Cors Origin
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -69,7 +72,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    #Cors
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = ( 'http://localhost:3000', )
 
 ROOT_URLCONF = 'primerApp.urls'
 
