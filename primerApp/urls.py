@@ -1,3 +1,5 @@
+from django.conf.urls.static import serve
+from django.conf import settings
 from django.urls import path, include, re_path
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
@@ -6,7 +8,7 @@ from rest_framework import routers, serializers, viewsets
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'is_staff']
+        fields = ['url', 'username', 'is_staff']
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
@@ -21,6 +23,8 @@ router.register(r'users', UserViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
+    re_path(r'^api/v1/profile/', include('Profile.urls')),
+    re_path(r'^assets/(?P<path>.*)$',  serve, {'document_root':settings.MEDIA_ROOT}), 
     re_path(r'^api/v1/loadImage/', include('loadImage.urls')), 
     re_path(r'^api/v1/register', include('register.urls')), 
     re_path(r'^api/', include('login.urls')), 

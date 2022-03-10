@@ -73,3 +73,5 @@ class LoadImageTableDetail(APIView):
             return Response("Imagen eliminada",status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("Imagen no encontrada",status = status.HTTP_400_BAD_REQUEST)
+
+
