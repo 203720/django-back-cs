@@ -1,33 +1,7 @@
-# from rest_framework import serializers
-# from django.contrib.auth.models import User
-
-# class UserSerializer(serializers.Serializer):
-#     id = serializers.ReadOnlyField()
-#     username = serializers.CharField()
-#     email = serializers.EmailField()
-#     password = serializers.CharField()
-
-#     def create(self, validate_data):
-#         instance = User()
-#         instance.username = validate_data.get('username')
-#         instance.email = validate_data.get('email')
-#         instance.set_password(validate_data.get('password'))
-#         instance.save()
-        
-#         return instance
-
-#     def validate_username(self, data):
-#         users = User.objects.filter(username = data)
-#         if len(users) !=0:
-#             raise serializers.ValidationError("Este nombre de usuario ya existe")
-#         else:
-#             return data
-
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
-
 class RegisterSerializer(serializers.ModelSerializer):
    email = serializers.EmailField(
            required=True,
@@ -59,7 +33,6 @@ class RegisterSerializer(serializers.ModelSerializer):
            last_name=validated_data['last_name']
        )
  
-      
        user.set_password(validated_data['password'])
        user.save()
  

@@ -1,5 +1,4 @@
-# Create your views here.
-
+import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,29 +6,29 @@ from rest_framework import exceptions
 import os.path
 import json
 
-#Importación de modelos
 from loadImage.models import PrimerTabla
-
 from loadImage.serializers import PrimerTablaSerializer
-
 class LoadImageTableList(APIView):
     def response_custom(self,message, pay_load, status):
-        responseX = {"messages":message, "pay_load":pay_load, "status":status}
-        responseY = json.dumps(responseX)
-        responseOk = json.loads(responseY)
-        return responseOk
+        response_x = {"messages":message, "pay_load":pay_load, "status":status}
+        response_y = json.dumps(response_x)
+        response_ok = json.loads(response_y)
+        return response_ok
         
     def get(self, request, format=None):
         queryset = PrimerTabla.objects.all()
         serializer = PrimerTablaSerializer(queryset, many = True, context = {'request':request})
-        responseOk = self.response_custom("Success", serializer.data, status.HTTP_200_OK)
-        return Response(responseOk)
+        response_ok = self.response_custom("Success", serializer.data, status.HTTP_200_OK)
+        return Response(response_ok)
 
     def post(self, request):
         if 'url_img' not in request.data:
             raise exceptions.ParseError(
                 "No hay ninguna imagen")
         image = request.data['url_img']
+        name, formato_img = os.path.splitext(image.name)
+        request.data['name_img'] = name
+        request.data['format_img'] = formato_img
         serializer = PrimerTablaSerializer(data=request.data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
@@ -48,17 +47,22 @@ class LoadImageTableDetail(APIView):
             return 0
 
     def get(self, request,pk, format=None):
-        idResponse = self.get_object(pk)
-        if idResponse != 0:
-            idResponse = PrimerTablaSerializer(idResponse)
-            return Response(idResponse.data, status = status.HTTP_200_OK)
+        id_response = self.get_object(pk)
+        if id_response != 0:
+            id_response = PrimerTablaSerializer(id_response)
+            return Response(id_response.data, status = status.HTTP_200_OK)
         return Response("No hay imagenes", status = status.HTTP_400_BAD_REQUEST)
 
 
     def put(self, request,pk, format=None):
-        idResponse = self.get_object(pk)
+        id_response = self.get_object(pk)
         image = request.data['url_img']
+        name, formato_img = os.path.splitext(image.name)
+        request.data['name_img'] = name
+        request.data['format_img'] = formato_img
         serializer = PrimerTablaSerializer(data=request.data)
+        request.data['edited'] = datetime.datetime.now()
+        serializer = PrimerTablaSerializer(id_response, data = request.data)
         if serializer.is_valid():
             serializer.save()
             datas = serializer.data

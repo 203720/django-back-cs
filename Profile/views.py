@@ -1,4 +1,4 @@
-# Create your views here.
+from ast import If
 import json
 from urllib import response
 from django.http import JsonResponse
@@ -9,19 +9,14 @@ from rest_framework import status
 from rest_framework import exceptions
 import os
 import datetime
-#Importaciones de modelos
 from Profile.models import ProfileTable
 from django.contrib.auth.models import User
-
-
-#IMportacion de serializers
 from Profile.serializers import ProfileTablaSerializer
-
 class ProfileTableList(APIView):
 
-    def get_objectUser(self, idUser):
+    def get_objectUser(self, id_user):
         try:
-            return User.objects.get(pk = idUser)
+            return User.objects.get(pk = id_user)
         except User.DoesNotExist:
             return 0
     
@@ -30,16 +25,16 @@ class ProfileTableList(APIView):
         if 'url_img' not in request.data:
             raise exceptions.ParseError(
                 "No se ha seleccionado una imagen")
-        imagen = request.data['url_img']
         id_user = request.data['id_user']
         user = self.get_objectUser(id_user)
-        serializer = ProfileTablaSerializer(data=request.data)
-        if serializer.is_valid():
-            validated_data = serializer.validated_data
-            profile = ProfileTable(**validated_data)
-            profile.save()
-            serializer_response = ProfileTablaSerializer(profile)
-            return Response(serializer_response.data, status=status.HTTP_201_CREATED)
+        if(user!=0):
+            serializer = ProfileTablaSerializer(data=request.data)
+            if serializer.is_valid():
+                validated_data = serializer.validated_data
+                profile = ProfileTable(**validated_data)
+                profile.save()
+                serializer_response = ProfileTablaSerializer(profile)
+                return Response(serializer_response.data, status=status.HTTP_201_CREATED)
         return Response("Error", status=status.HTTP_400_BAD_REQUEST)
     
 class ProfileTableDetail(APIView):
@@ -51,23 +46,22 @@ class ProfileTableDetail(APIView):
             return 0
     
     def get(self, request, pk, format=None):
-        idResponse = self.get_object(pk)
-        if idResponse != 0:
-            idResponse = ProfileTablaSerializer(idResponse)
-            return Response(idResponse.data, status = status.HTTP_200_OK)
+        id_response = self.get_object(pk)
+        if id_response != 0:
+            id_response = ProfileTablaSerializer(id_response)
+            return Response(id_response.data, status = status.HTTP_200_OK)
         return Response("No hay datos", status = status.HTTP_400_BAD_REQUEST)
     
     def put(self, request, pk, format=None):
         archivos = request.data['url_img']
-        idResponse = self.get_object(pk)
-        if(idResponse != 0):
-            serializer = ProfileTablaSerializer(idResponse)
+        id_response = self.get_object(pk)
+        if(id_response != 0):
             try:
-                os.remove('assets/'+str(idResponse.url_img))
+                os.remove('assets/'+str(id_response.url_img))
             except os.error:
                 print("La imagen no se encontro")
-            idResponse.url_img = archivos
-            idResponse.save()
+            id_response.url_img = archivos
+            id_response.save()
             return Response("Imagen actualizada", status=status.HTTP_201_CREATED)
         else:
             return Response("Error")
@@ -79,14 +73,13 @@ class ProfileTableDetail(APIView):
             return Response("Imagen eliminada",status=status.HTTP_204_NO_CONTENT)
         return Response("La imagen no se encontro",status = status.HTTP_400_BAD_REQUEST)
 
-
 class ProfileTableUsersDetail(APIView):
 
     def get(self, request, pk, format=None):
-        idResponse = User.objects.filter(id=pk).values()
-        if(idResponse != 0):
-            responseData = self.res_custom(idResponse, status.HTTP_200_OK)
-            return Response(responseData)
+        id_response = User.objects.filter(id=pk).values()
+        if(id_response != 0):
+            response_data = self.res_custom(id_response, status.HTTP_200_OK)
+            return Response(response_data)
         return("User no encontrado")
 
     def put(self, request, pk, format=None):
@@ -100,11 +93,11 @@ class ProfileTableUsersDetail(APIView):
         return Response(self.res_custom(user_update, status.HTTP_200_OK))
 
     def res_custom(self, user, status):
-        JsonResponse = {
+        json_response = {
             "first_name" : user[0]['first_name'],
             "last_name" : user[0]['last_name'],
             "username" : user[0]['username'],
             "email" : user[0]['email'],
             "status" : status
         }
-        return JsonResponse
+        return json_response
